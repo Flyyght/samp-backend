@@ -1,9 +1,14 @@
 const express = require("express");
 const query = require("samp-query");
+const path = require('path'); // Добавляем модуль для работы с путями
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Пример серверов, позже можно подключать Supabase
+// Обслуживание статических файлов из папки public
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Пример серверов
 const servers = [
   { ip: "185.169.134.45", port: 7777 },
   { ip: "135.125.204.112", port: 7777 }
@@ -42,6 +47,11 @@ setInterval(updateCache, 15000);
 
 app.get("/", (req, res) => {
   res.send("SA-MP Server Query API is running.");
+});
+
+// Добавляем маршрут для мониторинга
+app.get("/monitor", (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'monitor.html'));
 });
 
 app.get("/api/online", (req, res) => {
