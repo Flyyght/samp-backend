@@ -76,8 +76,8 @@
                 `;
                 
                 // Статус сервера
-                const statusClass = server.status === 'online' ? 'online' : 'offline';
-                const statusText = server.status === 'online' ? 'Онлайн' : 'Оффлайн';
+                const statusClass = server.server_status === 'online' ? 'online' : 'offline';
+                const statusText = server.server_status === 'online' ? 'Онлайн' : 'Оффлайн';
                 
                 // Время обновления
                 const lastUpdated = new Date(server.last_updated).toLocaleTimeString();
