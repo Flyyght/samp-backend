@@ -45,107 +45,145 @@
 <body>
     <h1>Игровые серверы</h1>
     <div id="servers-container"></div>
+    <div id="error-message" style="color: red; display: none;"></div>
 
     <script src="https://unpkg.com/@supabase/supabase-js"></script>
     <script>
-        // Инициализация Supabase
-        const supabaseUrl = 'https://ipauzjhvvylydjkkpmvg.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlwYXV6amh2dnlseWRqa2twbXZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAwNjgwNzksImV4cCI6MjA2NTY0NDA3OX0.QDglFvYmbgK_dtTjy5-mG3NKJLB6FvSbTcBW90cITQE';
-        const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+        // Обработчик загрузки DOM
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Инициализация Supabase
+            const supabaseUrl = 'https://ipauzjhvvylydjkkpmvg.supabase.co';
+            const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlwYXV6amh2dnlseWRqa2twbXZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAwNjgwNzksImV4cCI6MjA2NTY0NDA3OX0.QDglFvYmbgK_dtTjy5-mG3NKJLB6FvSbTcBW90cITQE';
+            const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+            
+            console.log("Supabase инициализирован");
 
-        // Функция создания карточки сервера
-        function createServerCard(server) {
-            const card = document.createElement('div');
-            card.className = 'server-card';
-            card.id = `server-${server.id}`;
-            
-            // Прогресс-бар онлайна
-            const fillPercentage = Math.min(100, (server.current_players / server.max_players) * 100);
-            const progressBar = `
-                <div class="progress-bar">
-                    <div class="progress-fill" style="width: ${fillPercentage}%"></div>
-                </div>
-                <div>Игроки: ${server.current_players}/${server.max_players}</div>
-            `;
-            
-            // Статус сервера
-            const statusClass = server.status === 'online' ? 'online' : 'offline';
-            const statusText = server.status === 'online' ? 'Онлайн' : 'Оффлайн';
-            
-            // Время обновления
-            const lastUpdated = new Date(server.last_updated).toLocaleTimeString();
-            
-            card.innerHTML = `
-                <div class="server-header">
-                    <div class="server-name">${server.name}</div>
-                    <div class="server-status ${statusClass}">${statusText}</div>
-                </div>
-                <div class="server-info">
-                    <div>IP: ${server.ip}:${server.port}</div>
-                    <div>Режим: ${server.mode}</div>
-                    <div>Карта: ${server.map_name}</div>
-                    <div>Язык: ${server.language}</div>
-                    ${progressBar}
-                    <div>Пинг: ${server.ping} мс</div>
-                    <div>Обновлено: ${lastUpdated}</div>
-                </div>
-            `;
-            
-            return card;
-        }
-
-        // Обработчик обновлений в реальном времени
-        function handleRealtimeUpdates() {
-            const channel = supabase
-                .channel('servers-channel')
-                .on('postgres_changes', {
-                    event: 'UPDATE',
-                    schema: 'public',
-                    table: 'hosted_servers'
-                }, (payload) => {
-                    console.log('Получено обновление:', payload.new);
-                    updateServerUI(payload.new);
-                })
-                .subscribe();
-        }
-
-        // Обновление UI при получении данных
-        function updateServerUI(serverData) {
-            let serverCard = document.getElementById(`server-${serverData.id}`);
-            
-            if (!serverCard) {
-                const container = document.getElementById('servers-container');
-                serverCard = createServerCard(serverData);
-                container.appendChild(serverCard);
-            } else {
-                // Просто обновляем существующую карточку
-                const newCard = createServerCard(serverData);
-                serverCard.replaceWith(newCard);
+            // Функция создания карточки сервера
+            function createServerCard(server) {
+                const card = document.createElement('div');
+                card.className = 'server-card';
+                card.id = `server-${server.id}`;
+                
+                // Прогресс-бар онлайна
+                const fillPercentage = Math.min(100, (server.current_players / server.max_players) * 100);
+                const progressBar = `
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${fillPercentage}%"></div>
+                    </div>
+                    <div>Игроки: ${server.current_players}/${server.max_players}</div>
+                `;
+                
+                // Статус сервера
+                const statusClass = server.status === 'online' ? 'online' : 'offline';
+                const statusText = server.status === 'online' ? 'Онлайн' : 'Оффлайн';
+                
+                // Время обновления
+                const lastUpdated = new Date(server.last_updated).toLocaleTimeString();
+                
+                card.innerHTML = `
+                    <div class="server-header">
+                        <div class="server-name">${server.name}</div>
+                        <div class="server-status ${statusClass}">${statusText}</div>
+                    </div>
+                    <div class="server-info">
+                        <div>IP: ${server.ip}:${server.port}</div>
+                        <div>Режим: ${server.mode}</div>
+                        <div>Карта: ${server.map_name}</div>
+                        <div>Язык: ${server.language}</div>
+                        ${progressBar}
+                        <div>Пинг: ${server.ping} мс</div>
+                        <div>Обновлено: ${lastUpdated}</div>
+                    </div>
+                `;
+                
+                return card;
             }
-        }
 
-        // Загрузка начальных данных
-        async function loadInitialServers() {
-            const { data: servers, error } = await supabase
-                .from('hosted_servers')
-                .select('*');
-            
-            if (error) {
-                console.error('Ошибка загрузки серверов:', error);
-                return;
+            // Обработчик обновлений в реальном времени
+            function handleRealtimeUpdates() {
+                const channel = supabase
+                    .channel('servers-channel')
+                    .on('postgres_changes', {
+                        event: 'UPDATE',
+                        schema: 'public',
+                        table: 'hosted_servers'
+                    }, (payload) => {
+                        console.log('Получено обновление:', payload.new);
+                        updateServerUI(payload.new);
+                    })
+                    .subscribe();
             }
-            
-            servers.forEach(server => {
-                const container = document.getElementById('servers-container');
-                const card = createServerCard(server);
-                container.appendChild(card);
-            });
-        }
 
-        // Инициализация
-        document.addEventListener('DOMContentLoaded', () => {
-            loadInitialServers();
-            handleRealtimeUpdates();
+            // Обновление UI при получении данных
+            function updateServerUI(serverData) {
+                let serverCard = document.getElementById(`server-${serverData.id}`);
+                
+                if (!serverCard) {
+                    const container = document.getElementById('servers-container');
+                    serverCard = createServerCard(serverData);
+                    container.appendChild(serverCard);
+                } else {
+                    // Просто обновляем существующую карточку
+                    const newCard = createServerCard(serverData);
+                    serverCard.replaceWith(newCard);
+                }
+            }
+
+            // Показать сообщение об ошибке
+            function showError(message) {
+                const errorDiv = document.getElementById('error-message');
+                errorDiv.textContent = message;
+                errorDiv.style.display = 'block';
+                console.error(message);
+            }
+
+            // Загрузка начальных данных
+            async function loadInitialServers() {
+                try {
+                    const { data: servers, error } = await supabase
+                        .from('hosted_servers')
+                        .select('*');
+                    
+                    if (error) {
+                        showError('Ошибка загрузки серверов: ' + error.message);
+                        return;
+                    }
+                    
+                    if (!servers || servers.length === 0) {
+                        showError('Серверы не найдены');
+                        return;
+                    }
+                    
+                    const container = document.getElementById('servers-container');
+                    container.innerHTML = ''; // Очищаем контейнер
+                    
+                    servers.forEach(server => {
+                        const card = createServerCard(server);
+                        container.appendChild(card);
+                    });
+                    
+                    console.log(`Загружено серверов: ${servers.length}`);
+                    
+                } catch (e) {
+                    showError('Необработанная ошибка: ' + e.message);
+                }
+            }
+
+            // Основной поток выполнения
+            try {
+                await loadInitialServers();
+                handleRealtimeUpdates();
+                
+                // Проверочный запрос
+                const testResult = await supabase
+                    .from('hosted_servers')
+                    .select('*', { count: 'exact' });
+                
+                console.log('Проверка подключения:', testResult);
+                
+            } catch (error) {
+                showError('Ошибка инициализации: ' + error.message);
+            }
         });
     </script>
 </body>
