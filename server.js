@@ -8,7 +8,7 @@ const PORT = process.env.PORT || 3000;
 
 // Настройки Supabase
 const SUPABASE_URL = 'https://ipauzjhvvylydjkkpmvg.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'; // укорочено для примера
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlwYXV6amh2dnlseWRqa2twbXZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAwNjgwNzksImV4cCI6MjA2NTY0NDA3OX0.QDglFvYmbgK_dtTjy5-mG3NKJLB6FvSbTcBW90cITQE'; // укорочено для примера
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let servers = []; // Будет обновляться из Supabase
