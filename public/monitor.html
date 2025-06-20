@@ -51,10 +51,12 @@
     <script>
         // Обработчик загрузки DOM
         document.addEventListener('DOMContentLoaded', async () => {
-            // Инициализация Supabase
+            // Инициализация Supabase с другим именем переменной
             const supabaseUrl = 'https://ipauzjhvvylydjkkpmvg.supabase.co';
             const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlwYXV6amh2dnlseWRqa2twbXZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAwNjgwNzksImV4cCI6MjA2NTY0NDA3OX0.QDglFvYmbgK_dtTjy5-mG3NKJLB6FvSbTcBW90cITQE';
-            const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+            
+            // Используем другое имя переменной для клиента
+            const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
             
             console.log("Supabase инициализирован");
 
@@ -101,7 +103,7 @@
 
             // Обработчик обновлений в реальном времени
             function handleRealtimeUpdates() {
-                const channel = supabase
+                const channel = supabaseClient
                     .channel('servers-channel')
                     .on('postgres_changes', {
                         event: 'UPDATE',
@@ -140,7 +142,7 @@
             // Загрузка начальных данных
             async function loadInitialServers() {
                 try {
-                    const { data: servers, error } = await supabase
+                    const { data: servers, error } = await supabaseClient
                         .from('hosted_servers')
                         .select('*');
                     
@@ -175,7 +177,7 @@
                 handleRealtimeUpdates();
                 
                 // Проверочный запрос
-                const testResult = await supabase
+                const testResult = await supabaseClient
                     .from('hosted_servers')
                     .select('*', { count: 'exact' });
                 
