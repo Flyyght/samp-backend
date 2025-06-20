@@ -5,7 +5,7 @@ const PORT = process.env.PORT || 3000;
 
 // Пример серверов, позже можно подключать Supabase
 const servers = [
-  { ip: "51.89.1.222", port: 7777 },
+  { ip: " 185.169.134.45", port: 7777 },
   { ip: "135.125.204.112", port: 7777 }
 ];
 
